@@ -9,10 +9,28 @@
 //A C program using the termios library to disable echo
 //in the terminal - by Pieter Holleman
 
+class FakeServer {
 
-int dispatch();
-void* do_greeting2 (void* arg);
-int download(const std::string filename)
+public:
+	FakeServer();
+	void run();
+private:
+	int dispatch();
+	static void* do_greeting2 (void* arg);
+	int download(const std::string filename);
+	int i;
+};
+FakeServer::FakeServer()
+{
+	i = 0;
+}
+
+void FakeServer::run()
+{
+	dispatch();
+}
+
+int FakeServer::download(const std::string filename)
 {
 	std::cout << "File requested: " << filename << "\n";
 	return 0;
@@ -22,12 +40,14 @@ int download(const std::string filename)
 int main(int argc, char* argv[]) {
 
 	//printf("Hello World");
-	dispatch();
+	FakeServer f;
+	f.run();
+	//dispatch();
 	return 0;
 }
 
 //Function to disable echo
-int dispatch() {
+int FakeServer::dispatch() {
 
 	int count;
 	pthread_t thread1;
@@ -50,7 +70,7 @@ int dispatch() {
 		}
 		else 
 		{
-			count++;
+			i++;
 			pthread_detach(thread1);
 		}
 		// if ((status = pthread_join (thread1, &result1)) != 0)
@@ -67,9 +87,10 @@ int dispatch() {
 
 }
 
-void* do_greeting2 (void* arg)
+void* FakeServer::do_greeting2 (void* arg)
 {
-	int val = rand() % 2;
+	srand(time(NULL));
+	//int val = rand() % 2;
 
 	// print out message based on val
 	std::cout << "thread" << std::endl;
